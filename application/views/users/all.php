@@ -24,10 +24,12 @@
           <td class="tdOptions">
             <form action="alta" method="post">
               <input type="hidden" name="user" value="<?php echo $user_item['user']; ?>"/>
+              <input type="hidden" name="tipo" value="Alta"/>
               <input type = "submit" name = "submit" value = "Dar alta" <?php if ($user_item['estado'] == 'Alta' || $user_item['fondos'] < $minFondos ){ echo "disabled"; }; ?>/>
             </form>
             <form action="baja" method="post">
               <input type="hidden" name="user" value="<?php echo $user_item['user']; ?>"/>
+              <input type="hidden" name="tipo" value="Baja"/>
               <input type = "submit" name = "submit" value = "Dar baja" <?php if ($user_item['estado'] == 'Baja'){ echo "disabled"; }; ?>/>
             </form>
             <form action="cobrar" method="post">

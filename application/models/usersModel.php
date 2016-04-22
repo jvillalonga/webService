@@ -11,8 +11,8 @@ class usersModel extends CI_Model {
   //da de alta al usuario
   public function alta(){
     $user = $this->input->post('user');
-
-    $this->db->set('estado', 'Alta');
+    $tipo = $this->input->post('tipo');
+    $this->db->set('estado', $tipo);
     $this->db->where('user', $user);
     $this->db->update('users');
   }
@@ -20,8 +20,8 @@ class usersModel extends CI_Model {
   //da de baja al usuario
   public function baja(){
     $user = $this->input->post('user');
-
-    $this->db->set('estado', 'Baja');
+    $tipo = $this->input->post('tipo');
+    $this->db->set('estado', $tipo);
     $this->db->where('user', $user);
     $this->db->update('users');
 

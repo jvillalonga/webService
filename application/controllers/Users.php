@@ -6,6 +6,7 @@ class Users extends CI_Controller {
     parent::__construct();
 
     $this->load->model('usersModel');
+    $this->load->model('registroModel');
     $this->load->helper('url_helper');
     $this->load->helper('date');
     $this->load->helper('form');
@@ -50,12 +51,20 @@ class Users extends CI_Controller {
   public function alta() {
     $this->usersModel->alta();
 
+    $data['user'] = $this->input->post('user');
+    $data['tipo'] = $this->input->post('tipo');
+
+    $this->registroModel->registrarAltaBaja($data);
     $this->all();
   }
 
   public function baja() {
     $this->usersModel->baja();
 
+    $data['user'] = $this->input->post('user');
+    $data['tipo'] = $this->input->post('tipo');
+
+    $this->registroModel->registrarAltaBaja($data);
     $this->all();
   }
 }
