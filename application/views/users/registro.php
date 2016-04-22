@@ -1,4 +1,4 @@
-<div>
+<div class="section">
   <h2>Nuevo usuario</h2>
   <div id="form">
     <div class="red">

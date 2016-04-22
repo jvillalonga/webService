@@ -1,6 +1,6 @@
-<?php $nimFondos=5;?>
+<?php $minFondos=5;?>
 
-<div>
+<div class="section">
   <h2><?php echo $title; ?></h2>
   <table id="taula">
     <thead>
@@ -18,23 +18,23 @@
           <td><?php echo $user_item['user']; ?></td>
           <td><?php echo $user_item['telefono']; ?></td>
           <td
-          <?php if ($user_item['fondos'] < $nimFondos) { echo "class='red'";};?>
+          <?php if ($user_item['fondos'] < $minFondos) { echo "class='red'";};?>
           > <?php echo $user_item['fondos']; ?> $</td>
-          <td><?php if ($user_item['alta'] == 1){ echo "Alta"; } else { echo "Baja";}; ?></td>
+          <td><?php echo $user_item['estado']; ?></td>
           <td class="tdOptions">
             <form action="alta" method="post">
               <input type="hidden" name="user" value="<?php echo $user_item['user']; ?>"/>
-              <input type = "submit" name = "submit" value = "Dar alta" <?php if ($user_item['alta'] == 1 || $user_item['fondos'] < $nimFondos ){ echo "disabled"; }; ?>/>
+              <input type = "submit" name = "submit" value = "Dar alta" <?php if ($user_item['estado'] == 'Alta' || $user_item['fondos'] < $minFondos ){ echo "disabled"; }; ?>/>
             </form>
             <form action="baja" method="post">
               <input type="hidden" name="user" value="<?php echo $user_item['user']; ?>"/>
-              <input type = "submit" name = "submit" value = "Dar baja" <?php if ($user_item['alta'] == 0){ echo "disabled"; }; ?>/>
+              <input type = "submit" name = "submit" value = "Dar baja" <?php if ($user_item['estado'] == 'Baja'){ echo "disabled"; }; ?>/>
             </form>
             <form action="cobrar" method="post">
               <input type="hidden" name="user" value="<?php echo $user_item['user']; ?>"/>
-              <input type = "submit" name = "submit" value = "Cobrar" <?php if ($user_item['alta'] == 0){ echo "disabled"; }; ?>/>
+              <input type = "submit" name = "submit" value = "Cobrar" <?php if ($user_item['estado'] == 'Baja'){ echo "disabled"; }; ?>/>
             </form>
-            <?php if ($user_item['fondos'] < $nimFondos){ echo "<p class='red'>Fondos insuficientes</p>"; }; ?>
+            <?php if ($user_item['fondos'] < $minFondos){ echo "<p class='red'>Fondos insuficientes</p>"; }; ?>
           </td>
         </tr>
       <?php endforeach; ?>

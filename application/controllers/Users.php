@@ -13,29 +13,6 @@ class Users extends CI_Controller {
 
   }
 
-  //funcion para registrar usuarios
-  public function registrar() {
-    $this->load->helper('form');
-    $this->load->library('form_validation');
-      
-    $this->form_validation->set_message('required', '{field} requerido.');
-    $this->form_validation->set_message('is_unique', 'Este {field} ya está en uso.');
-
-    $this->form_validation->set_rules('user', 'Usuario', 'required|is_unique[users.user]');
-    $this->form_validation->set_rules('pass', 'Password', 'required');
-    $this->form_validation->set_rules('telefono', 'Teléfono', 'required');
-    $this->form_validation->set_rules('fondos', 'Fondos', 'required');
-
-    if ($this->form_validation->run() === FALSE) {
-
-      $this->all();
-
-    } else {
-      $this->usersModel->setUser();
-      $this->all();
-
-    }
-  }
 
   public function all()
   {
@@ -49,22 +26,35 @@ class Users extends CI_Controller {
     $this->load->view('templates/footer');
   }
 
+  //funcion para registrar usuarios
+  public function registrar() {
+    $this->load->helper('form');
+    $this->load->library('form_validation');
+
+    $this->form_validation->set_message('required', '{field} requerido.');
+    $this->form_validation->set_message('is_unique', 'Este {field} ya está en uso.');
+
+    $this->form_validation->set_rules('user', 'Usuario', 'required|is_unique[users.user]');
+    $this->form_validation->set_rules('pass', 'Password', 'required');
+    $this->form_validation->set_rules('telefono', 'Teléfono', 'required');
+    $this->form_validation->set_rules('fondos', 'Fondos', 'required');
+
+    if ($this->form_validation->run() === FALSE) {
+      $this->all();
+    } else {
+      $this->usersModel->setUser();
+      $this->all();
+    }
+  }
+
   public function alta() {
-
     $this->usersModel->alta();
-
-    $data['title'] = 'Todos los usuarios';
-    $data['users'] = $this->usersModel->getAllUsers();
 
     $this->all();
   }
 
   public function baja() {
-
     $this->usersModel->baja();
-
-    $data['title'] = 'Todos los usuarios';
-    $data['users'] = $this->usersModel->getAllUsers();
 
     $this->all();
   }
