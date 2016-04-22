@@ -1,0 +1,221 @@
+html
+{
+    padding: 0;
+}
+
+body
+{
+    font-family: 'Roboto', sans-serif;
+
+    height: 100%;
+    margin: 0;
+
+    background-color: #d0d0d0;
+}
+
+#content
+{
+    position: relative;
+
+    min-height: 100%;
+}
+
+#footer,
+#header,
+#menu
+{
+    padding: 5px 0;
+
+    color: white;
+    background-color: #111;
+}
+
+#header
+{
+    height: 105px;
+    margin-bottom: 55px;
+}
+
+#logo
+{
+    width: 190px;
+    margin: auto;
+    padding: 10px;
+
+    text-align: center;
+
+    border-radius: 5px;
+    background-color: white;
+}
+
+#footer
+{
+    position: absolute;
+    bottom: 0;
+
+    width: 100%;
+
+    text-align: center;
+
+    box-shadow: 0 -1px 0 #fa0;
+}
+
+#menu
+{
+    position: fixed;
+    z-index: 3;
+    top: 85px;
+
+    width: 100%;
+    margin-right: 10px;
+    padding: 0;
+
+    text-align: center;
+
+    background-color: #111;
+    box-shadow: 0 1px 0 #fa0;
+}
+
+#menu > nav > ul
+{
+    margin: 0;
+    padding: 0;
+}
+
+#menu > nav > ul > li
+{
+    display: inline;
+
+    list-style: none;
+}
+
+#menu > nav > ul > li > a
+{
+    display: inline-block;
+
+    margin: 5px 10px;
+
+    text-decoration: none;
+
+    color: white;
+}
+
+#menu > nav > ul > li > a:hover,
+a:hover
+{
+    color: #fa0;
+}
+
+#main
+{
+    max-width: 900px;
+    margin: auto;
+    padding: 0 10px 50px;
+}
+
+#form
+{
+    padding: 10px;
+
+    background-color: white;
+    box-shadow: 5px 5px 5px #888;
+}
+
+#form > form > input
+{
+    margin: 5px;
+}
+
+.foto
+{
+    width: 80px;
+    height: 80px;
+    margin: 10px;
+
+    border: black solid 1px;
+}
+
+thead,
+h2
+{
+    padding: 10px;
+
+    color: #fa0;
+    background-color: #111;
+}
+
+h2
+{
+    margin: 0;
+}
+
+#taula tr:nth-child(even)
+{
+    background-color: #eee !important;
+}
+
+#deviceInfo
+{
+    margin: 15px 10px 0;
+    padding: 10px;
+
+    color: #fa0;
+    background-color: #111;
+    box-shadow: 5px 5px 5px #888;
+}
+
+.tdOptions form,
+.tdOptions p
+{
+    display: inline;
+}
+
+.red
+{
+    color: red;
+}
+/*Fonts*/
+@font-face
+{
+    font-family: 'Roboto';
+    font-weight: 200;
+
+    src: local(Roboto Thin), url('../fonts/roboto/Roboto-Thin.eot');
+    src: url('../fonts/roboto/Roboto-Thin.eot?#iefix') format('embedded-opentype'), url('../fonts/roboto/Roboto-Thin.woff') format('woff'), url('../fonts/roboto/Roboto-Thin.ttf') format('truetype');
+}
+
+@font-face
+{
+    font-family: 'Roboto';
+    font-weight: 300;
+
+    src: local(Roboto Light), url('../fonts/roboto/Roboto-Light.eot');
+    src: url('../fonts/roboto/Roboto-Light.eot?#iefix') format('embedded-opentype'), url('../fonts/roboto/Roboto-Light.woff') format('woff'), url('../fonts/roboto/Roboto-Light.ttf') format('truetype');
+}
+
+@font-face
+{
+    font-family: 'Roboto';
+    font-weight: 400;
+
+    src: local(Roboto Regular), url('../fonts/roboto/Roboto-Regular.eot');
+    src: url('../fonts/roboto/Roboto-Regular.eot?#iefix') format('embedded-opentype'), url('../fonts/roboto/Roboto-Regular.woff') format('woff'), url('../fonts/roboto/Roboto-Regular.ttf') format('truetype');
+}
+
+@font-face
+{
+    font-family: 'Roboto';
+    font-weight: 500;
+
+    src: url('../fonts/roboto/Roboto-Medium.eot');
+    src: url('../fonts/roboto/Roboto-Medium.eot?#iefix') format('embedded-opentype'), url('../fonts/roboto/Roboto-Medium.woff') format('woff'), url('../fonts/roboto/Roboto-Medium.ttf') format('truetype');
+}
+
+@font-face
+{
+    font-family: 'Roboto';
+    font-weight: 700;
+
+    src: url('../fonts/roboto/Roboto-Bold.eot');
+    src: url('../fonts/roboto/Roboto-Bold.eot?#iefix') format('embedded-opentype'), url('../fonts/roboto/Roboto-Bold.woff') format('woff'), url('../fonts/roboto/Roboto-Bold.ttf') format('truetype');
+}

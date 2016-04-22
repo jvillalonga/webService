@@ -1,3 +1,4 @@
+      </div>
       <div id="footer">
         <em>Copyright &copy; 2016</em>
       </div>

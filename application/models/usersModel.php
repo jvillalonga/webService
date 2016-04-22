@@ -9,16 +9,45 @@ class usersModel extends CI_Model {
   }
 
   //da de alta al usuario
-  public function altaUser($user){
+  public function alta(){
+    $user = $this->input->post('user');
 
+    $this->db->set('alta', 1);
+    $this->db->where('user', $user);
+    $this->db->update('users');
   }
 
   //da de baja al usuario
-  public function bajaUser(){
+  public function baja(){
+    $user = $this->input->post('user');
+
+    $this->db->set('alta', 0);
+    $this->db->where('user', $user);
+    $this->db->update('users');
 
   }
 
-  //obtiene datos del usuario
+  //obtiene datos de todos los usuario
+  public function getAllUsers() {
+    $query = $this->db->get('users');
+    return $query->result_array();
+  }
+
+  //obtiene datos de todos los usuario dados de alta
+  public function getAltaUsers() {
+    $this->db->where('alta', 1);
+    $query = $this->db->get('users');
+    return $query->result_array();
+  }
+
+  //obtiene datos de todos los usuario sin dar de alta
+  public function getBajaUsers() {
+    $this->db->where('alta', 0);
+    $query = $this->db->get('users');
+    return $query->result_array();
+  }
+
+  //obtiene datos de un usuario
   public function getUser() {
     $user = $this->input->post('user');
     $this->db->where('user', $user);
@@ -42,9 +71,13 @@ class usersModel extends CI_Model {
     $this->load->helper('url');
     $user = $this->input->post('user');
     $pass = $this->input->post('pass');
+    $telefono = $this->input->post('telefono');
+    $fondos = $this->input->post('fondos');
       $data = array(
         'user' => $user,
-        'pass' => MD5($pass)
+        'pass' => MD5($pass),
+        'telefono' => $telefono,
+        'fondos' => $fondos
       );
       return $this->db->insert('users', $data);
   }
