@@ -51,20 +51,33 @@ class Users extends CI_Controller {
   public function alta() {
     $this->usersModel->alta();
 
-    $data['user'] = $this->input->post('user');
-    $data['tipo'] = $this->input->post('tipo');
+    $this->registroModel->registrarAltaBaja();
 
-    $this->registroModel->registrarAltaBaja($data);
     $this->all();
   }
 
   public function baja() {
     $this->usersModel->baja();
 
-    $data['user'] = $this->input->post('user');
-    $data['tipo'] = $this->input->post('tipo');
+    $this->registroModel->registrarAltaBaja();
 
-    $this->registroModel->registrarAltaBaja($data);
+    $this->all();
+  }
+
+  public function cobrar(){
+    //$this->usersModel->getUser($this->input->post('user'));
+    $this->usersModel->cobrar();
+
+    $this->registroModel->registrarCobro();
+
+    $this->all();
+  }
+
+  public function cobrarSuscritos(){
+    $this->usersModel->cobrarSuscritos();
+
+    //$this->registroModel->registrarCobro();
+
     $this->all();
   }
 }

@@ -8,6 +8,29 @@ class usersModel extends CI_Model {
 
   }
 
+  //cobrar a un usuario
+  public function cobrar(){
+    $cobro = $this->input->post('cantidad');
+    $user = $this->input->post('user');
+
+    $this->db->set('fondos', 'fondos-'.$cobro, FALSE);
+    $this->db->where('user', $user);
+    $this->db->update('users');
+  }
+
+  //cobrar a todos los usuarios suscritos
+  public function cobrarSuscritos(){
+    $cobro = $this->input->post('cantidad');
+
+    // $this->db->where('estado', 'Alta');
+
+    // $query = $this->db->get('users');
+
+    $this->db->set('fondos', 'fondos-'.$cobro, FALSE);
+    $this->db->where('estado', 'Alta');
+    $this->db->update('users');
+  }
+
   //da de alta al usuario
   public function alta(){
     $user = $this->input->post('user');
@@ -33,29 +56,28 @@ class usersModel extends CI_Model {
     return $query->result_array();
   }
 
-  //obtiene datos de todos los usuario dados de alta
+  //obtiene datos de todos los usuario dados de alta*
   public function getAltaUsers() {
     $this->db->where('estado', 'Alta');
     $query = $this->db->get('users');
     return $query->result_array();
   }
 
-  //obtiene datos de todos los usuario sin dar de alta
+  //obtiene datos de todos los usuario sin dar de alta*
   public function getBajaUsers() {
     $this->db->where('estado', 'Baja');
     $query = $this->db->get('users');
     return $query->result_array();
   }
 
-  //obtiene datos de un usuario
-  public function getUser() {
-    $user = $this->input->post('user');
+  //obtiene datos de un usuario*
+  public function getUser($user) {
     $this->db->where('user', $user);
     $query = $this->db->get('users');
     return $query->result_array();
   }
 
-  // comprueba si user y pass son correctos
+  // comprueba si user y pass son correctos*
   public function getCountUser() {
     $user = $this->input->post('user');
     $pass = $this->input->post('pass');

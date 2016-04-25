@@ -6,7 +6,7 @@
         <th>Id</th>
         <th>User</th>
         <th>Teléfono</th>
-        <th>Operación</th>
+        <th>Cantidad</th>
         <th>Fecha</th>
         <th>Opciones</th>
       </tr>
@@ -14,10 +14,10 @@
     <tbody>
       <?php foreach ($regs as $reg_item): ?>
         <tr>
-          <td><?php echo $reg_item['id']; ?></td>
+          <td><?php echo $reg_item['idTransaccion']; ?></td>
           <td><?php echo $reg_item['user']; ?></td>
           <td><?php echo $reg_item['telefono']; ?></td>
-          <td> <?php echo $reg_item['tipo']; ?></td>
+          <td> <?php echo $reg_item['cantidad']; ?> $</td>
           <td><?php echo $reg_item['fecha']; ?></td>
           <td class="tdOptions">
 

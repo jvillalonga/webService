@@ -23,4 +23,15 @@ class registros extends CI_Controller {
     $this->load->view('templates/footer');
   }
 
+  public function cobros()
+  {
+    $data['regs'] = $this->registroModel->getCobros();
+    $data['title'] = 'Cobros';
+
+    $this->load->view('templates/header', $data);
+    $this->load->view('templates/menu');
+    $this->load->view('registros/regCobros', $data);
+    $this->load->view('templates/footer');
+  }
+
 }

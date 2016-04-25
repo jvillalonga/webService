@@ -8,7 +8,10 @@
         <a href="<?php echo site_url('users/all'); ?>">Usuarios</a>
       </li>|
       <li>
-        <a href="<?php echo site_url('registros/regAltaBaja'); ?>">Registros</a>
+        <a href="<?php echo site_url('registros/altasBajas'); ?>">Altas/Bajas</a>
+      </li>|
+      <li>
+        <a href="<?php echo site_url('registros/cobros'); ?>">Cobros</a>
       </li>
     </ul>
   </nav>

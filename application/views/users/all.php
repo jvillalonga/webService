@@ -34,6 +34,7 @@
             </form>
             <form action="cobrar" method="post">
               <input type="hidden" name="user" value="<?php echo $user_item['user']; ?>"/>
+              <input type="number" step="0.01" min="0" name="cantidad" value="0.50"  <?php if ($user_item['estado'] == 'Baja'){ echo "disabled"; }; ?>/>
               <input type = "submit" name = "submit" value = "Cobrar" <?php if ($user_item['estado'] == 'Baja'){ echo "disabled"; }; ?>/>
             </form>
             <?php if ($user_item['fondos'] < $minFondos){ echo "<p class='red'>Fondos insuficientes</p>"; }; ?>
@@ -42,4 +43,8 @@
       <?php endforeach; ?>
     </tbody>
   </table>
+  <form action="cobrarSuscritos" method="post">
+    <input type="number" step="0.01" min="0" name="cantidad" value="0.50"/>
+    <input type = "submit" name = "submit" value = "Cobrar suscritos"/>
+  </form>
 </div>
