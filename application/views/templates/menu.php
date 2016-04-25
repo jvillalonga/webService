@@ -12,6 +12,9 @@
       </li>|
       <li>
         <a href="<?php echo site_url('registros/cobros'); ?>">Cobros</a>
+      </li>|
+      <li>
+        <a href="<?php echo site_url('registros/wsComunication'); ?>">WSRegistros</a>
       </li>
     </ul>
   </nav>

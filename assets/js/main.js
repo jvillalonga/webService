@@ -2,6 +2,7 @@
 $(document).ready(function () {
 
   $('#taula').DataTable();
+  $('#taula2').DataTable();
 
   $('.article').hide();
   $('.comment').hide();

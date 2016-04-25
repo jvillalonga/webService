@@ -155,7 +155,8 @@ h2
     margin: 0;
 }
 
-#taula tr:nth-child(even)
+#taula tr:nth-child(even),
+#taula2 tr:nth-child(even)
 {
     background-color: #eee !important;
 }

@@ -1,4 +1,4 @@
-<?php $minFondos=5;?>
+<?php $minFondos=0;?>
 
 <div class="section">
   <h2><?php echo $title; ?></h2>
@@ -18,7 +18,7 @@
           <td><?php echo $user_item['user']; ?></td>
           <td><?php echo $user_item['telefono']; ?></td>
           <td
-          <?php if ($user_item['fondos'] < $minFondos) { echo "class='red'";};?>
+          <?php if ($user_item['fondos'] <= $minFondos) { echo "class='red'";};?>
           > <?php echo $user_item['fondos']; ?> $</td>
           <td><?php echo $user_item['estado']; ?></td>
           <td class="tdOptions">
@@ -34,10 +34,18 @@
             </form>
             <form action="cobrar" method="post">
               <input type="hidden" name="user" value="<?php echo $user_item['user']; ?>"/>
-              <input type="number" step="0.01" min="0" name="cantidad" value="0.50"  <?php if ($user_item['estado'] == 'Baja'){ echo "disabled"; }; ?>/>
-              <input type = "submit" name = "submit" value = "Cobrar" <?php if ($user_item['estado'] == 'Baja'){ echo "disabled"; }; ?>/>
+              <input type="number" step="0.01" min="0" name="cantidad" value="0.50"
+                <?php if ($user_item['estado'] == 'Baja'){ echo "disabled"; }; ?>
+              />
+              <input type = "submit" name = "submit" value = "Cobrar"
+              <?php if ($user_item['estado'] == 'Baja' || $user_item['fondos'] <= $minFondos){ echo "disabled"; }; ?>/>
             </form>
-            <?php if ($user_item['fondos'] < $minFondos){ echo "<p class='red'>Fondos insuficientes</p>"; }; ?>
+            <form action="ingresar" method="post">
+              <input type="hidden" name="user" value="<?php echo $user_item['user']; ?>"/>
+              <input type="number" step="0.01" min="0" name="cantidad" value="0.50"/>
+              <input type="submit" name="submit" value="Ingresar"/>
+            </form>
+            <!-- <?php if ($user_item['fondos'] <= $minFondos){ echo "<p class='red'>Saldo insuficiente</p>"; }; ?> -->
           </td>
         </tr>
       <?php endforeach; ?>

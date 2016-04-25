@@ -8,6 +8,16 @@ class usersModel extends CI_Model {
 
   }
 
+  //ingresar a un usuario
+  public function ingresar(){
+    $ingreso = $this->input->post('cantidad');
+    $user = $this->input->post('user');
+
+    $this->db->set('fondos', 'fondos+'.$ingreso, FALSE);
+    $this->db->where('user', $user);
+    $this->db->update('users');
+  }
+
   //cobrar a un usuario
   public function cobrar(){
     $cobro = $this->input->post('cantidad');
@@ -22,12 +32,16 @@ class usersModel extends CI_Model {
   public function cobrarSuscritos(){
     $cobro = $this->input->post('cantidad');
 
-    // $this->db->where('estado', 'Alta');
+    //da de baja a los usuarios con saldo insuficiente
+    $this->db->set('estado', 'Baja');
+    $this->db->where('estado', 'Alta');
+    $this->db->where('fondos<', $cobro);
+    $this->db->update('users');
 
-    // $query = $this->db->get('users');
-
+    //cobra a los usuarios de alta
     $this->db->set('fondos', 'fondos-'.$cobro, FALSE);
     $this->db->where('estado', 'Alta');
+    $this->db->where('fondos>=', $cobro);
     $this->db->update('users');
   }
 

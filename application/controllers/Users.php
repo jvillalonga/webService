@@ -64,8 +64,13 @@ class Users extends CI_Controller {
     $this->all();
   }
 
+  public function ingresar(){
+    $this->usersModel->ingresar();
+  
+    $this->all();
+  }
+
   public function cobrar(){
-    //$this->usersModel->getUser($this->input->post('user'));
     $this->usersModel->cobrar();
 
     $this->registroModel->registrarCobro();

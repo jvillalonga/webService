@@ -8,7 +8,7 @@
         <th>Teléfono</th>
         <th>Cantidad</th>
         <th>Fecha</th>
-        <th>Opciones</th>
+        <!-- <th>Opciones</th> -->
       </tr>
     </thead>
     <tbody>
@@ -19,9 +19,9 @@
           <td><?php echo $reg_item['telefono']; ?></td>
           <td> <?php echo $reg_item['cantidad']; ?> $</td>
           <td><?php echo $reg_item['fecha']; ?></td>
-          <td class="tdOptions">
+          <!-- <td class="tdOptions">
 
-          </td>
+          </td> -->
         </tr>
       <?php endforeach; ?>
     </tbody>
