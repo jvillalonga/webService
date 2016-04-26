@@ -17,7 +17,7 @@
           <td><?php echo $reg_item['txId']; ?></td>
           <td><?php echo $reg_item['token']; ?></td>
           <td><?php echo $reg_item['statusCode']; ?></td>
-          <td> <?php echo $reg_item['statusMessage']; ?> $</td>
+          <td> <?php echo $reg_item['statusMessage']; ?></td>
           <td><?php echo $reg_item['fecha']; ?></td>
           <!-- <td class="tdOptions">
 

@@ -19,7 +19,7 @@
           <td><?php echo $reg_item['transaction']; ?></td>
           <td><?php echo $reg_item['msisdn']; ?></td>
           <td><?php echo $reg_item['shortcode']; ?></td>
-          <td><?php echo $reg_item['tamountext']; ?></td>
+          <td><?php echo $reg_item['text']; ?></td>
           <td><?php echo $reg_item['amount']; ?></td>
           <td><?php echo $reg_item['token']; ?></td>
           <td><?php echo $reg_item['fecha']; ?></td>
@@ -30,11 +30,7 @@
       <?php endforeach; ?>
     </tbody>
   </table>
-    <form action="http://52.30.94.95/token" method="post">
-      <?xml version="1.0" encoding="UTF-8"?>
-      <request>
-      <transaction>21a</transaction>
-      </request>
+    <form action="getToken" method="post">
       <input type="submit" name="submit" value="get Token"/>
     </form>
 </div>

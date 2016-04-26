@@ -8,16 +8,17 @@ class webServiceComModel extends CI_Model {
 
   }
 
-  public function setRequest(){
+  public function setRequest($datos){
 
     // $user = $this->input->post('user');
     $data = array(
-      'transaction' => $transaction,
-      'msisdn' => $msisdn,
-      'shortcode' => $shortcode,
-      'text' => $text,
-      'amount' => $amount,
-      'token' => $token,
+      'transaction' => $datos['transaction'],
+      'msisdn' => $datos['msisdn'],
+      'Tipo' => $datos['tipo'],
+      'shortcode' => $datos['shortcode'],
+      'text' => $datos['text'],
+      'amount' => $datos['amount'],
+      'token' => $datos['token'],
       'fecha' => standard_date('DATE_W3C', now())
     );
     return $this->db->insert('wsrequest', $data);
@@ -32,6 +33,7 @@ class webServiceComModel extends CI_Model {
 
     // $user = $this->input->post('user');
     $data = array(
+      'Tipo' => $tipo,
       'txId' => $txId,
       'statusCode' => $statusCode,
       'statusMessage' => $statusMessage,
@@ -47,27 +49,121 @@ class webServiceComModel extends CI_Model {
     return $query->result_array();
   }
 
+  public function getTransaction(){
+    $this->db->select_max('transaction');
+    $query = $this->db->get('wsrequest');
+    return $query->result_array()[0]['transaction']+1;
+  }
 
   public function getToken(){
+    $tran = $this->getTransaction();
+
+    $data['tipo'] = 'ObtencionToken';
+    $data['transaction'] = $tran;
+    $data['msisdn'] = NULL;
+    $data['shortcode'] = NULL;
+    $data['text'] = NULL;
+    $data['amount'] = NULL;
+    $data['token'] = NULL;
+
+    //$this->setRequest($data);
     $req = '<?xml version="1.0" encoding="UTF-8"?>
     <request>
-    <transaction>21a</transaction>
+    <transaction>'.$tran.'</transaction>
     </request>';
 
-    $soap_do = curl_init();
-    //Indicamos a donde deseamos enviar nuestro post
-    curl_setopt($soap_do, CURLOPT_URL,"http://52.30.94.95/token" );
-    //Indicamos lo que queremos enviar en nuestro post, en este caso un xml
-    curl_setopt($soap_do, CURLOPT_POSTFIELDS,$req);
-    //Configuramos los headers necesarios. En este caso es importante la definición de la longitud de los datos a enviar
-    curl_setopt($soap_do, CURLOPT_HTTPHEADER,array('Content-Type: application/x-www-form-urlencoded', 'Content-Length: '.strlen($req),'http://52.30.94.95/token' ));
-      //Añadimos una opción más para poder almacenar la respuesta en una variable
-      curl_setopt($soap_do, CURLOPT_RETURNTRANSFER, 1);
-      //Ejecutamos el curl y almacenamos la respuesta en una variable
-      $respuesta=curl_exec($soap_do);
-      //Cerramos nuesta sesión
-      curl_close($soap_do);
-      echo '<script language="javascript">alert("'.$respuesta.'");</script>';
-      echo $respuesta->asXML();
-    }
+    // $username = 'jvillalonga';
+    // $password = 'KJP5uwgc';
+    //
+    // $URL = "http://52.30.94.95/token";
+    //
+    // $ch = curl_init($URL);
+    // curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
+    // curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    // curl_setopt($ch, CURLOPT_POST, 1);
+    // curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
+    // curl_setopt($ch, CURLOPT_POSTFIELDS, "$req");
+    // curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    // $output = curl_exec($ch);
+    // curl_close($ch);
+    // return $output;
   }
+
+
+  public function getCobro(){
+  $tran = $this->getTransaction();
+
+  $data['tipo'] = 'ObtencionToken';
+  $data['transaction'] = $tran;
+  $data['msisdn'] = $msisdn;
+  $data['shortcode'] = NULL;
+  $data['text'] = NULL;
+  $data['amount'] = $amount;
+  $data['token'] = $token;
+
+  $this->setRequest($data);
+    $req = '<?xml version="1.0" encoding="UTF-8"?>
+    <request>
+     <transaction>'.$tran.'</transaction>
+     <msisdn>'.$msisdn.'</msisdn>
+     <amount>'.$amount.'</amount>
+     <token>'.$token.'</token>
+    </request>';
+
+    $username = 'jvillalonga';
+    $password = 'KJP5uwgc';
+
+    $URL = "http://52.30.94.95/bill";
+
+    $ch = curl_init($URL);
+    curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
+    curl_setopt($ch, CURLOPT_POSTFIELDS, "$req");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $output = curl_exec($ch);
+    curl_close($ch);
+    return $output;
+  }
+
+
+  public function sendSms(){$tran = $this->getTransaction();
+
+  $data['tipo'] = 'ObtencionToken';
+  $data['transaction'] = $tran;
+  $data['msisdn'] = $msisdn;
+  $data['shortcode'] = $shortcode;
+  $data['text'] = $text;
+  $data['amount'] = NULL;
+  $data['token'] = NULL;
+
+  $this->setRequest($data);
+    $req = '<?xml version="1.0" encoding="UTF-8"?>
+    <request>
+      <shortcode>'.$shortcode.'</shortcode>
+      <text>'.$text.'</text>
+      <msisdn>'.$msisdn.'</msisdn>
+      <transaction>'.$tran.'</transaction>
+    </request>';
+
+    $username = 'jvillalonga';
+    $password = 'KJP5uwgc';
+
+    $URL = "http://52.30.94.95/send_sms";
+
+    $ch = curl_init($URL);
+    curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
+    curl_setopt($ch, CURLOPT_POSTFIELDS, "$req");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $output = curl_exec($ch);
+    curl_close($ch);
+    return $output;
+  }
+}
