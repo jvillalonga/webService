@@ -7,10 +7,9 @@ class webServiceComModel extends CI_Model {
     $this->load->database();
 
   }
-
+//Registra el Request al WS
   public function setRequest($datos){
 
-    // $user = $this->input->post('user');
     $data = array(
       'transaction' => $datos['transaction'],
       'msisdn' => $datos['msisdn'],
@@ -29,15 +28,15 @@ class webServiceComModel extends CI_Model {
     return $query->result_array();
   }
 
-  public function setResponse(){
+//Registra Response del WS
+  public function setResponse($datos){
 
-    // $user = $this->input->post('user');
     $data = array(
-      'Tipo' => $tipo,
-      'txId' => $txId,
-      'statusCode' => $statusCode,
-      'statusMessage' => $statusMessage,
-      'token' => $token,
+      'Tipo' => $datos['tipo'],
+      'txId' => $datos['txId'],
+      'statusCode' => $datos['statusCode'],
+      'statusMessage' => $datos['statusMessage'],
+      'token' => $datos['token'],
       'fecha' => standard_date('DATE_W3C', now())
     );
     return $this->db->insert('wsresponse', $data);
@@ -49,16 +48,19 @@ class webServiceComModel extends CI_Model {
     return $query->result_array();
   }
 
-  public function getTransaction(){
-    $this->db->select_max('transaction');
+  public function getId(){
+    $this->db->select_max('id');
     $query = $this->db->get('wsrequest');
-    return $query->result_array()[0]['transaction']+1;
+    return $query->result_array()[0]['id']+1;
   }
 
   //peticion de token al WS
   public function getToken(){
-    $tran = 2; //$this->getTransaction();
+    $id = $this->getId();
 
+    $tran = base_convert( $id, 10, 36 );
+
+    $data['id'] = $id;
     $data['tipo'] = 'ObtencionToken';
     $data['transaction'] = $tran;
     $data['msisdn'] = NULL;
@@ -67,73 +69,55 @@ class webServiceComModel extends CI_Model {
     $data['amount'] = NULL;
     $data['token'] = NULL;
 
-    //$this->setRequest($data);
+    $this->setRequest($data);
+
     $req = '<?xml version="1.0" encoding="UTF-8"?>
     <request>
     <transaction>'.$tran.'</transaction>
     </request>';
 
-    $username = 'jvillalonga';
-    $password = 'KJP5uwgc';
+    $url = "http://52.30.94.95/token";
 
-    $URL = "http://52.30.94.95/token";
-
-    $ch = curl_init($URL);
-    curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
-    curl_setopt($ch, CURLOPT_POSTFIELDS, "$req");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    $output = curl_exec($ch);
-    curl_close($ch);
-    return $output;
+    return $output = $this->requestWS($url, $req);
   }
 
   //peticion de cobro al WS
-  public function getCobro(){
-  $tran = $this->getTransaction();
+  public function peticionCobro ($token){
+    $id = $this->getId();
+    $tran = base_convert( $id, 10, 36 );
+    //cambiar por variable/input
+    $msisdn = '666666666';
+    //cambiar por variable/input
+    $amount = 1;
 
-  $data['tipo'] = 'ObtencionToken';
-  $data['transaction'] = $tran;
-  $data['msisdn'] = $msisdn;
-  $data['shortcode'] = NULL;
-  $data['text'] = NULL;
-  $data['amount'] = $amount;
-  $data['token'] = $token;
+    $data['id'] = $id;
+    $data['tipo'] = 'PeticionCobro';
+    $data['transaction'] = $tran;
+    $data['msisdn'] = $msisdn;
+    $data['shortcode'] = NULL;
+    $data['text'] = NULL;
+    $data['amount'] = $amount;
+    $data['token'] = $token;
 
-  $this->setRequest($data);
+    $this->setRequest($data);
+
     $req = '<?xml version="1.0" encoding="UTF-8"?>
     <request>
-     <transaction>'.$tran.'</transaction>
-     <msisdn>'.$msisdn.'</msisdn>
-     <amount>'.$amount.'</amount>
-     <token>'.$token.'</token>
+    <transaction>'.$tran.'</transaction>
+    <msisdn>'.$msisdn.'</msisdn>
+    <amount>'.$amount.'</amount>
+    <token>'.$token.'</token>
     </request>';
 
-    $username = 'jvillalonga';
-    $password = 'KJP5uwgc';
+    $url = "http://52.30.94.95/bill";
 
-    $URL = "http://52.30.94.95/bill";
-
-    $ch = curl_init($URL);
-    curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
-    curl_setopt($ch, CURLOPT_POSTFIELDS, "$req");
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    $output = curl_exec($ch);
-    curl_close($ch);
-    return $output;
+    return $output = $this->requestWS($url, $req);
   }
 
   //envio de sms
   public function sendSms(){$tran = $this->getTransaction();
 
-  $data['tipo'] = 'ObtencionToken';
+  $data['tipo'] = 'EnvioSms';
   $data['transaction'] = $tran;
   $data['msisdn'] = $msisdn;
   $data['shortcode'] = $shortcode;
@@ -142,6 +126,7 @@ class webServiceComModel extends CI_Model {
   $data['token'] = NULL;
 
   $this->setRequest($data);
+
     $req = '<?xml version="1.0" encoding="UTF-8"?>
     <request>
       <shortcode>'.$shortcode.'</shortcode>
@@ -150,21 +135,28 @@ class webServiceComModel extends CI_Model {
       <transaction>'.$tran.'</transaction>
     </request>';
 
+    $url = "http://52.30.94.95/send_sms";
+
+    return $output = $this->requestWS($url, $req);
+  }
+
+  public function requestWS ($url, $xml) {
+
     $username = 'jvillalonga';
     $password = 'KJP5uwgc';
 
-    $URL = "http://52.30.94.95/send_sms";
-
-    $ch = curl_init($URL);
+    $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
     curl_setopt($ch, CURLOPT_POST, 1);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
-    curl_setopt($ch, CURLOPT_POSTFIELDS, "$req");
+    curl_setopt($ch, CURLOPT_POSTFIELDS, "$xml");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $output = curl_exec($ch);
     curl_close($ch);
+
     return $output;
+
   }
 }

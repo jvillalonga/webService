@@ -3,10 +3,11 @@
   <table id="taula">
     <thead>
       <tr>
-        <th>Transaction</th>
+        <th>Transaccion</th>
+        <th>Tipo</th>
         <th>msisdn</th>
-        <th>shortcode</th>
-        <th>text</th>
+        <!-- <th>shortcode</th> -->
+        <!-- <th>text</th> -->
         <th>amount</th>
         <th>token</th>
         <th>Fecha</th>
@@ -17,9 +18,10 @@
       <?php foreach ($regRequest as $reg_item): ?>
         <tr>
           <td><?php echo $reg_item['transaction']; ?></td>
+          <td><?php echo $reg_item['Tipo']; ?></td>
           <td><?php echo $reg_item['msisdn']; ?></td>
-          <td><?php echo $reg_item['shortcode']; ?></td>
-          <td><?php echo $reg_item['text']; ?></td>
+          <!-- <td><?php echo $reg_item['shortcode']; ?></td> -->
+          <!-- <td><?php echo $reg_item['text']; ?></td> -->
           <td><?php echo $reg_item['amount']; ?></td>
           <td><?php echo $reg_item['token']; ?></td>
           <td><?php echo $reg_item['fecha']; ?></td>

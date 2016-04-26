@@ -4,9 +4,10 @@
     <thead>
       <tr>
         <th>txId</th>
+        <th>Tipo</th>
         <th>token</th>
         <th>statusCode</th>
-        <th>statusMessage</th>
+        <!-- <th>statusMessage</th> -->
         <th>Fecha</th>
         <!-- <th>Opciones</th> -->
       </tr>
@@ -15,9 +16,10 @@
       <?php foreach ($regResponse as $reg_item): ?>
         <tr>
           <td><?php echo $reg_item['txId']; ?></td>
-          <td><?php echo $reg_item['token']; ?></td>
+          <td><?php echo $reg_item['Tipo']; ?></td>
+          <td><?php echo substr($reg_item['token'],0,15) . ' ...'; ?></td>
           <td><?php echo $reg_item['statusCode']; ?></td>
-          <td> <?php echo $reg_item['statusMessage']; ?></td>
+          <!-- <td> <?php echo $reg_item['statusMessage']; ?></td> -->
           <td><?php echo $reg_item['fecha']; ?></td>
           <!-- <td class="tdOptions">
 
