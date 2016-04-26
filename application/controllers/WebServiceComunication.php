@@ -27,8 +27,12 @@ class WebServiceComunication extends CI_Controller {
   public function getToken() {
     $responseToken = $this->webServiceComModel->getToken();
 
-    echo $responseToken;
-    $this->wsComunication();
+    $xml=simplexml_load_string($responseToken) or die("Error: Cannot create object");
+    echo $xml->statusCode . "<br>";
+    echo $xml->statusMessage . "<br>";
+    echo $xml->txId . "<br>";
+    echo $xml->token;
+    //$this->wsComunication();
   }
 
 }

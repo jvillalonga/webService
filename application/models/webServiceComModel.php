@@ -55,8 +55,9 @@ class webServiceComModel extends CI_Model {
     return $query->result_array()[0]['transaction']+1;
   }
 
+  //peticion de token al WS
   public function getToken(){
-    $tran = $this->getTransaction();
+    $tran = 2; //$this->getTransaction();
 
     $data['tipo'] = 'ObtencionToken';
     $data['transaction'] = $tran;
@@ -72,25 +73,25 @@ class webServiceComModel extends CI_Model {
     <transaction>'.$tran.'</transaction>
     </request>';
 
-    // $username = 'jvillalonga';
-    // $password = 'KJP5uwgc';
-    //
-    // $URL = "http://52.30.94.95/token";
-    //
-    // $ch = curl_init($URL);
-    // curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
-    // curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-    // curl_setopt($ch, CURLOPT_POST, 1);
-    // curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
-    // curl_setopt($ch, CURLOPT_POSTFIELDS, "$req");
-    // curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    // $output = curl_exec($ch);
-    // curl_close($ch);
-    // return $output;
+    $username = 'jvillalonga';
+    $password = 'KJP5uwgc';
+
+    $URL = "http://52.30.94.95/token";
+
+    $ch = curl_init($URL);
+    curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: text/xml'));
+    curl_setopt($ch, CURLOPT_POSTFIELDS, "$req");
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $output = curl_exec($ch);
+    curl_close($ch);
+    return $output;
   }
 
-
+  //peticion de cobro al WS
   public function getCobro(){
   $tran = $this->getTransaction();
 
@@ -129,7 +130,7 @@ class webServiceComModel extends CI_Model {
     return $output;
   }
 
-
+  //envio de sms
   public function sendSms(){$tran = $this->getTransaction();
 
   $data['tipo'] = 'ObtencionToken';
