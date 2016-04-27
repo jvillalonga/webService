@@ -7,7 +7,33 @@ class webServiceComModel extends CI_Model {
     $this->load->database();
 
   }
-//Registra el Request al WS
+
+  //registra Request y Response del WS
+  public function setWsComunication($datos){
+
+    $data = array(
+      'transaction' => $datos['transaction'],
+      'msisdn' => $datos['msisdn'],
+      'Tipo' => $datos['tipo'],
+      'shortcode' => $datos['shortcode'],
+      'text' => $datos['text'],
+      'amount' => $datos['amount'],
+      'token' => $datos['token'],
+      'txId' => $datos['txId'],
+      'statusCode' => $datos['statusCode'],
+      'statusMessage' => $datos['statusMessage'],
+      'fecha' => standard_date('DATE_W3C', now())
+    );
+    return $this->db->insert('wscomunication', $data);
+  }
+
+  //obtiene registros wscomunication
+  public function getWsComunication() {
+    $query = $this->db->get('wscomunication');
+    return $query->result_array();
+  }
+
+  //Registra el Request al WS
   public function setRequest($datos){
 
     $data = array(
@@ -28,7 +54,7 @@ class webServiceComModel extends CI_Model {
     return $query->result_array();
   }
 
-//Registra Response del WS
+  //Registra Response del WS
   public function setResponse($datos){
 
     $data = array(
@@ -73,7 +99,7 @@ class webServiceComModel extends CI_Model {
 
     $req = '<?xml version="1.0" encoding="UTF-8"?>
     <request>
-    <transaction>'.$tran.'</transaction>
+      <transaction>'.$tran.'</transaction>
     </request>';
 
     $url = "http://52.30.94.95/token";
@@ -103,10 +129,10 @@ class webServiceComModel extends CI_Model {
 
     $req = '<?xml version="1.0" encoding="UTF-8"?>
     <request>
-    <transaction>'.$tran.'</transaction>
-    <msisdn>'.$msisdn.'</msisdn>
-    <amount>'.$amount.'</amount>
-    <token>'.$token.'</token>
+      <transaction>'.$tran.'</transaction>
+      <msisdn>'.$msisdn.'</msisdn>
+      <amount>'.$amount.'</amount>
+      <token>'.$token.'</token>
     </request>';
 
     $url = "http://52.30.94.95/bill";
@@ -115,21 +141,25 @@ class webServiceComModel extends CI_Model {
   }
 
   //envio de sms
-  public function sendSms(){$tran = $this->getTransaction();
+  public function sendSms($text){
+    $id = $this->getId();
+    $tran = base_convert( $id, 10, 36 );
+    //cambiar por variable/input
+    $msisdn = '666666666';
 
-  $data['tipo'] = 'EnvioSms';
-  $data['transaction'] = $tran;
-  $data['msisdn'] = $msisdn;
-  $data['shortcode'] = $shortcode;
-  $data['text'] = $text;
-  $data['amount'] = NULL;
-  $data['token'] = NULL;
+    $data['tipo'] = 'EnvioSms';
+    $data['transaction'] = $tran;
+    $data['msisdn'] = $msisdn;
+    $data['shortcode'] = '000';
+    $data['text'] = $text;
+    $data['amount'] = NULL;
+    $data['token'] = NULL;
 
-  $this->setRequest($data);
+    $this->setRequest($data);
 
     $req = '<?xml version="1.0" encoding="UTF-8"?>
     <request>
-      <shortcode>'.$shortcode.'</shortcode>
+      <shortcode>000</shortcode>
       <text>'.$text.'</text>
       <msisdn>'.$msisdn.'</msisdn>
       <transaction>'.$tran.'</transaction>
@@ -140,6 +170,7 @@ class webServiceComModel extends CI_Model {
     return $output = $this->requestWS($url, $req);
   }
 
+  //conexion Request ws
   public function requestWS ($url, $xml) {
 
     $username = 'jvillalonga';
