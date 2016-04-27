@@ -10,7 +10,6 @@ class webServiceComModel extends CI_Model {
 
   //registra Request y Response del WS
   public function setWsComunication($datos){
-
     $data = array(
       'transaction' => $datos['transaction'],
       'msisdn' => $datos['msisdn'],
@@ -34,7 +33,7 @@ class webServiceComModel extends CI_Model {
   }
 
   //Registra el Request al WS
-  public function setRequest($datos){
+  public function setRequest($datos) {
 
     $data = array(
       'transaction' => $datos['transaction'],
@@ -48,7 +47,7 @@ class webServiceComModel extends CI_Model {
     );
     return $this->db->insert('wsrequest', $data);
   }
-  //obtiene registros
+  //obtiene registros Request
   public function getRequest() {
     $query = $this->db->get('WSRequest');
     return $query->result_array();
@@ -68,35 +67,30 @@ class webServiceComModel extends CI_Model {
     return $this->db->insert('wsresponse', $data);
   }
 
-  //obtiene registros
+  //obtiene registros Response
   public function getResponse() {
     $query = $this->db->get('WSResponse');
     return $query->result_array();
   }
 
-  public function getId(){
+  public function getTransac(){
     $this->db->select_max('id');
-    $query = $this->db->get('wsrequest');
-    return $query->result_array()[0]['id']+1;
+    $query = $this->db->get('wscomunication');
+    $id = $query->result_array()[0]['id']+1;
+
+    return $tran = base_convert( $id, 10, 36 );
   }
 
   //peticion de token al WS
-  public function getToken(){
-    $id = $this->getId();
-
-    $tran = base_convert( $id, 10, 36 );
-
-    $data['id'] = $id;
-    $data['tipo'] = 'ObtencionToken';
+  public function getToken($data){
+    $tran = $this->getTransac();
+    //datos para request
     $data['transaction'] = $tran;
-    $data['msisdn'] = NULL;
-    $data['shortcode'] = NULL;
+    $data['tipo'] = 'ObtencionToken';
     $data['text'] = NULL;
-    $data['amount'] = NULL;
     $data['token'] = NULL;
 
-    $this->setRequest($data);
-
+    //xml
     $req = '<?xml version="1.0" encoding="UTF-8"?>
     <request>
       <transaction>'.$tran.'</transaction>
@@ -104,70 +98,75 @@ class webServiceComModel extends CI_Model {
 
     $url = "http://52.30.94.95/token";
 
-    return $output = $this->requestWS($url, $req);
+    //return
+    $responseToken = $this->requestWS($url, $req);
+
+    $xml = simplexml_load_string($responseToken) or die("Error: Cannot create object");
+
+    $data['txId'] = $xml->txId;
+    $data['statusCode'] = $xml->statusCode;
+    $data['statusMessage'] = $xml->statusMessage;
+    $data['token'] = $xml->token;
+
+    return $data;
   }
 
   //peticion de cobro al WS
-  public function peticionCobro ($token){
-    $id = $this->getId();
-    $tran = base_convert( $id, 10, 36 );
-    //cambiar por variable/input
-    $msisdn = '666666666';
-    //cambiar por variable/input
-    $amount = 1;
+  public function peticionCobro($data){
+    $tran = $this->getTransac();
 
-    $data['id'] = $id;
     $data['tipo'] = 'PeticionCobro';
     $data['transaction'] = $tran;
-    $data['msisdn'] = $msisdn;
-    $data['shortcode'] = NULL;
-    $data['text'] = NULL;
-    $data['amount'] = $amount;
-    $data['token'] = $token;
 
-    $this->setRequest($data);
-
+    //xml
     $req = '<?xml version="1.0" encoding="UTF-8"?>
     <request>
       <transaction>'.$tran.'</transaction>
-      <msisdn>'.$msisdn.'</msisdn>
-      <amount>'.$amount.'</amount>
-      <token>'.$token.'</token>
+      <msisdn>'.$data['msisdn'].'</msisdn>
+      <amount>'.$data['amount'].'</amount>
+      <token>'.$data['token'].'</token>
     </request>';
 
     $url = "http://52.30.94.95/bill";
 
-    return $output = $this->requestWS($url, $req);
+    $responseBill = $this->requestWS($url, $req);
+
+    $xml = simplexml_load_string($responseBill) or die("Error: Cannot create object");
+
+    $data['txId'] = $xml->txId;
+    $data['statusCode'] = $xml->statusCode;
+    $data['statusMessage'] = $xml->statusMessage;
+
+    return $data;
   }
 
   //envio de sms
-  public function sendSms($text){
-    $id = $this->getId();
-    $tran = base_convert( $id, 10, 36 );
-    //cambiar por variable/input
-    $msisdn = '666666666';
+  public function sendSms($data){
+    $tran = $this->getTransac();
 
     $data['tipo'] = 'EnvioSms';
     $data['transaction'] = $tran;
-    $data['msisdn'] = $msisdn;
-    $data['shortcode'] = '000';
-    $data['text'] = $text;
-    $data['amount'] = NULL;
-    $data['token'] = NULL;
 
-    $this->setRequest($data);
-
+    //xml
     $req = '<?xml version="1.0" encoding="UTF-8"?>
     <request>
-      <shortcode>000</shortcode>
-      <text>'.$text.'</text>
-      <msisdn>'.$msisdn.'</msisdn>
-      <transaction>'.$tran.'</transaction>
+    <shortcode>000</shortcode>
+    <text>'.$data['text'].'</text>
+    <msisdn>'.$data['msisdn'].'</msisdn>
+    <transaction>'.$tran.'</transaction>
     </request>';
 
     $url = "http://52.30.94.95/send_sms";
 
-    return $output = $this->requestWS($url, $req);
+    $responseSms = $this->requestWS($url, $req);
+
+    $xml = simplexml_load_string($responseSms) or die("Error: Cannot create object");
+
+    $data['txId'] = $xml->txId;
+    $data['statusCode'] = $xml->statusCode;
+    $data['statusMessage'] = $xml->statusMessage;
+
+    return $data;
   }
 
   //conexion Request ws
