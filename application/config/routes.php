@@ -9,5 +9,6 @@ $route['registros/regCobros'] = 'registros/regCobros';
 $route['registros/wsComunication'] = 'WebServiceComunication/wsComunication';
 $route['registros/getToken'] = 'WebServiceComunication/getToken';
 $route['default_controller'] = 'welcome';
+$route['users/getToken'] = 'WebServiceComunication/getToken';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

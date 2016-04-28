@@ -12,8 +12,7 @@ class Registros extends CI_Controller {
 
   }
 
-  public function regAltaBaja()
-  {
+  public function regAltaBaja() {
     $data['regs'] = $this->registroModel->getAltaBaja();
     $data['title'] = 'Altas y Bajas';
 
@@ -23,14 +22,23 @@ class Registros extends CI_Controller {
     $this->load->view('templates/footer');
   }
 
-  public function cobros()
-  {
+  public function cobros() {
     $data['regs'] = $this->registroModel->getCobros();
-    $data['title'] = 'Cobros';
+    $data['title'] = 'Registro cobros';
 
     $this->load->view('templates/header', $data);
     $this->load->view('templates/menu');
     $this->load->view('registros/regCobros', $data);
+    $this->load->view('templates/footer');
+  }
+
+  public function regSms() {
+    $data['regs'] = $this->registroModel->getSms();
+    $data['title'] = 'Sms emviados';
+
+    $this->load->view('templates/header', $data);
+    $this->load->view('templates/menu');
+    $this->load->view('registros/regSms', $data);
     $this->load->view('templates/footer');
   }
 

@@ -6,8 +6,8 @@
         <th>Id</th>
         <th>User</th>
         <th>Teléfono</th>
-        <th>Operación</th>
         <th>Fecha</th>
+        <th>Texto</th>
         <!-- <th>Opciones</th> -->
       </tr>
     </thead>
@@ -17,8 +17,8 @@
           <td><?php echo $reg_item['id']; ?></td>
           <td><?php echo $reg_item['user']; ?></td>
           <td><?php echo $reg_item['telefono']; ?></td>
-          <td> <?php echo $reg_item['tipo']; ?></td>
           <td><?php echo $reg_item['fecha']; ?></td>
+          <td><?php echo $reg_item['texto']; ?></td>
           <!-- <td class="tdOptions">
 
           </td> -->

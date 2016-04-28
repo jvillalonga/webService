@@ -8,24 +8,14 @@ class usersModel extends CI_Model {
 
   }
 
-  //ingresar a un usuario
-  public function ingresar(){
-    $ingreso = $this->input->post('cantidad');
-    $user = $this->input->post('user');
-
-    $this->db->set('fondos', 'fondos+'.$ingreso, FALSE);
-    $this->db->where('user', $user);
-    $this->db->update('users');
-  }
-
   //cobrar a un usuario
   public function cobrar(){
     $cobro = $this->input->post('cantidad');
     $user = $this->input->post('user');
-
-    $this->db->set('fondos', 'fondos-'.$cobro, FALSE);
-    $this->db->where('user', $user);
-    $this->db->update('users');
+    $tel = $this->input->post('tel');
+    //getToken...
+    // $this->db->where('user', $user);
+    // $this->db->update('users');
   }
 
   //cobrar a todos los usuarios suscritos
@@ -33,33 +23,28 @@ class usersModel extends CI_Model {
     $cobro = $this->input->post('cantidad');
 
     //da de baja a los usuarios con saldo insuficiente
-    $this->db->set('estado', 'Baja');
-    $this->db->where('estado', 'Alta');
-    $this->db->where('fondos<', $cobro);
-    $this->db->update('users');
+    // $this->db->set('estado', 'Baja');
+    // $this->db->where('estado', 'Alta');
+    // $this->db->update('users');
 
     //cobra a los usuarios de alta
-    $this->db->set('fondos', 'fondos-'.$cobro, FALSE);
-    $this->db->where('estado', 'Alta');
-    $this->db->where('fondos>=', $cobro);
-    $this->db->update('users');
+    // $this->db->where('estado', 'Alta');
+    // $this->db->update('users');
   }
 
   //da de alta al usuario
   public function alta(){
-    $user = $this->input->post('user');
-    $tipo = $this->input->post('tipo');
-    $this->db->set('estado', $tipo);
-    $this->db->where('user', $user);
+    $telefono = $this->input->post('tel');
+    $this->db->set('estado', 'Alta');
+    $this->db->where('telefono', $telefono);
     $this->db->update('users');
   }
 
   //da de baja al usuario
   public function baja(){
-    $user = $this->input->post('user');
-    $tipo = $this->input->post('tipo');
-    $this->db->set('estado', $tipo);
-    $this->db->where('user', $user);
+    $telefono = $this->input->post('tel');
+    $this->db->set('estado', 'Baja');
+    $this->db->where('telefono', $telefono);
     $this->db->update('users');
 
   }
@@ -108,14 +93,12 @@ class usersModel extends CI_Model {
     $user = $this->input->post('user');
     $pass = $this->input->post('pass');
     $telefono = $this->input->post('telefono');
-    $fondos = $this->input->post('fondos');
       $data = array(
         'user' => $user,
         'pass' => MD5($pass),
-        'telefono' => $telefono,
-        'fondos' => $fondos
+        'telefono' => $telefono
       );
-      return $this->db->insert('users', $data);
+    return $this->db->insert('users', $data);
   }
 
 }

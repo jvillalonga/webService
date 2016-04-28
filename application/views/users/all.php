@@ -1,4 +1,3 @@
-<?php $minFondos=0;?>
 
 <div class="section">
   <h2><?php echo $title; ?></h2>
@@ -7,8 +6,8 @@
       <tr>
         <th>User</th>
         <th>Teléfono</th>
-        <th>Fondos</th>
         <th>Estado</th>
+        <th>Último cobro</th>
         <th>Opciones</th>
       </tr>
     </thead>
@@ -17,35 +16,29 @@
         <tr>
           <td><?php echo $user_item['user']; ?></td>
           <td><?php echo $user_item['telefono']; ?></td>
-          <td
-          <?php if ($user_item['fondos'] <= $minFondos) { echo "class='red'";};?>
-          > <?php echo $user_item['fondos']; ?> $</td>
           <td><?php echo $user_item['estado']; ?></td>
+          <td><?php echo $user_item['ultimoCobro']; ?></td>
           <td class="tdOptions">
             <form action="alta" method="post">
               <input type="hidden" name="user" value="<?php echo $user_item['user']; ?>"/>
-              <input type="hidden" name="tipo" value="Alta"/>
-              <input type = "submit" name = "submit" value = "Dar alta" <?php if ($user_item['estado'] == 'Alta' || $user_item['fondos'] < $minFondos ){ echo "disabled"; }; ?>/>
+              <input type="hidden" name="tel" value="<?php echo $user_item['telefono']; ?>"/>
+              <input type="hidden" name="cantidad" value="5"/>
+              <input type = "submit" name = "submit" value = "Dar alta (5$)" <?php if ($user_item['estado'] == 'Alta'){ echo "disabled"; }; ?>/>
             </form>
             <form action="baja" method="post">
               <input type="hidden" name="user" value="<?php echo $user_item['user']; ?>"/>
-              <input type="hidden" name="tipo" value="Baja"/>
+              <input type="hidden" name="tel" value="<?php echo $user_item['telefono']; ?>"/>
               <input type = "submit" name = "submit" value = "Dar baja" <?php if ($user_item['estado'] == 'Baja'){ echo "disabled"; }; ?>/>
             </form>
-            <form action="cobrar" method="post">
+            <form action="getToken" method="post">
               <input type="hidden" name="user" value="<?php echo $user_item['user']; ?>"/>
-              <input type="number" step="0.01" min="0" name="cantidad" value="0.50"
+              <input type="hidden" name="tel" value="<?php echo $user_item['telefono']; ?>"/>
+              <input type="number" step="0.01" min="0" name="cantidad" value="5"
                 <?php if ($user_item['estado'] == 'Baja'){ echo "disabled"; }; ?>
               />
               <input type = "submit" name = "submit" value = "Cobrar"
-              <?php if ($user_item['estado'] == 'Baja' || $user_item['fondos'] <= $minFondos){ echo "disabled"; }; ?>/>
+              <?php if ($user_item['estado'] == 'Baja'){ echo "disabled"; }; ?>/>
             </form>
-            <form action="ingresar" method="post">
-              <input type="hidden" name="user" value="<?php echo $user_item['user']; ?>"/>
-              <input type="number" step="0.01" min="0" name="cantidad" value="0.50"/>
-              <input type="submit" name="submit" value="Ingresar"/>
-            </form>
-            <!-- <?php if ($user_item['fondos'] <= $minFondos){ echo "<p class='red'>Saldo insuficiente</p>"; }; ?> -->
           </td>
         </tr>
       <?php endforeach; ?>

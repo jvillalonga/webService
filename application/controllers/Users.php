@@ -33,12 +33,11 @@ class Users extends CI_Controller {
     $this->load->library('form_validation');
 
     $this->form_validation->set_message('required', '{field} requerido.');
-    $this->form_validation->set_message('is_unique', 'Este {field} ya está en uso.');
+    $this->form_validation->set_message('is_unique', 'Este {field} ya está registrado.');
 
     $this->form_validation->set_rules('user', 'Usuario', 'required|is_unique[users.user]');
     $this->form_validation->set_rules('pass', 'Password', 'required');
-    $this->form_validation->set_rules('telefono', 'Teléfono', 'required');
-    $this->form_validation->set_rules('fondos', 'Fondos', 'required');
+    $this->form_validation->set_rules('telefono', 'Teléfono', 'required|is_unique[users.telefono]');
 
     if ($this->form_validation->run() === FALSE) {
       $this->all();
@@ -49,33 +48,31 @@ class Users extends CI_Controller {
   }
 
   public function alta() {
-    $this->usersModel->alta();
+  //comprovar si se pot cobro,
+    //Si:
+      $this->usersModel->alta();
 
-    $this->registroModel->registrarAltaBaja();
-
-    $this->all();
+      $this->registroModel->registrarAlta();
+    //No: missatge 'Sin fondos'.
+      $this->all();
   }
 
   public function baja() {
     $this->usersModel->baja();
 
-    $this->registroModel->registrarAltaBaja();
+    $this->registroModel->registrarBaja();
 
-    $this->all();
-  }
-
-  public function ingresar(){
-    $this->usersModel->ingresar();
-  
     $this->all();
   }
 
   public function cobrar(){
-    $this->usersModel->cobrar();
+  //comprovar si se pot cobro,
+    //Si:
+      $this->usersModel->cobrar();
 
-    $this->registroModel->registrarCobro();
-
-    $this->all();
+      $this->registroModel->registrarCobro();
+    //No: missatge 'Sin fondos' + Baja.
+      $this->all();
   }
 
   public function cobrarSuscritos(){

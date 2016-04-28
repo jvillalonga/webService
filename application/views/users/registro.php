@@ -9,7 +9,6 @@
     <input type="input" name="user" placeholder="User"/><br />
     <input type="password" name="pass" placeholder="Password"/><br />
     <input type="input" name="telefono" placeholder="Teléfono"/><br />
-    <input type="input" name="fondos" placeholder="Fondos"/><br />
 
     <input type="submit" name="submit" value="Registrar" />
 
