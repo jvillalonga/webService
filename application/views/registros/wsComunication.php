@@ -38,7 +38,4 @@
       <?php endforeach; ?>
     </tbody>
   </table>
-    <form action="getToken" method="post">
-      <input type="submit" name="submit" value="get Token"/>
-    </form>
 </div>

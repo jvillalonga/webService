@@ -75,7 +75,7 @@ class Users extends CI_Controller {
 
       $data['codigo'] = 'cobroOk';
       $this->wsComunicationModel->sendSms($data);
-      
+
       $this->all();
 
     } elseif ($cobroResult == 'NO_FUNDS') {
@@ -105,10 +105,8 @@ class Users extends CI_Controller {
   }
 
   public function cobrarSuscritos(){
-    $this->usersModel->cobrarSuscritos();
 
-    //$this->registroModel->registrarCobro();
-
-    $this->all();
+      echo '<script language="javascript">alert(" '.now().'-'. strtotime('2016-04-29').'='.((now() - strtotime('2016-04-05'))/60/60/24).'");</script>';
+      $this->all();
   }
 }
