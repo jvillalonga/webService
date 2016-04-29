@@ -7,6 +7,7 @@ class Users extends CI_Controller {
 
     $this->load->model('usersModel');
     $this->load->model('registroModel');
+    $this->load->model('wsComunicationModel');
     $this->load->helper('url_helper');
     $this->load->helper('date');
     $this->load->helper('form');
@@ -47,18 +48,46 @@ class Users extends CI_Controller {
     }
   }
 
-  public function alta() {
-  //comprovar si se pot cobro,
-    //Si:
-      $this->usersModel->alta();
+  public function peticionAlta() {
+    $data = $this->cobrar();
+    $cobroResult = $data['statusCode'];
+    if ($cobroResult == 'SUCCESS'){
 
+      $this->usersModel->alta();
       $this->registroModel->registrarAlta();
-    //No: missatge 'Sin fondos'.
-      $this->all();
+
+      $data['codigo'] = 'altaOk';
+      $this->wsComunicationModel->sendSms($data);
+
+    } elseif ($cobroResult == 'NO_FUNDS') {
+
+      $data['codigo'] = 'noAlta';
+      $this->wsComunicationModel->sendSms($data);
+
+    }
+    $this->all();
   }
 
-  public function baja() {
-    $this->usersModel->baja();
+  public function peticionCobro() {
+    $data = $this->cobrar();
+    $cobroResult = $data['statusCode'];
+    if ($cobroResult == 'SUCCESS'){
+
+      $data['codigo'] = 'cobroOk';
+      $this->wsComunicationModel->sendSms($data);
+      
+      $this->all();
+
+    } elseif ($cobroResult == 'NO_FUNDS') {
+
+      $data['codigo'] = 'noCobro';
+      $this->wsComunicationModel->sendSms($data);
+      $this->baja($data['msisdn']);
+    }
+  }
+
+  public function baja($telefono) {
+    $this->usersModel->baja($telefono);
 
     $this->registroModel->registrarBaja();
 
@@ -66,13 +95,13 @@ class Users extends CI_Controller {
   }
 
   public function cobrar(){
-  //comprovar si se pot cobro,
-    //Si:
-      $this->usersModel->cobrar();
-
+    $data = $this->wsComunicationModel->getToken();
+    $data = $this->wsComunicationModel->peticionCobro($data);
+    if ($data['statusCode'] == 'SUCCESS'){
       $this->registroModel->registrarCobro();
-    //No: missatge 'Sin fondos' + Baja.
-      $this->all();
+      $this->usersModel->cobrado();
+    }
+    return $data;
   }
 
   public function cobrarSuscritos(){

@@ -65,6 +65,7 @@ class registroModel extends CI_Model {
   //registra sms enviado
   public function registrarSms($data){
     $data = array(
+      'user' => $data['user'],
       'texto' => $data['text'],
       'telefono' => $data['msisdn'],
       'fecha' => standard_date('DATE_W3C', now())

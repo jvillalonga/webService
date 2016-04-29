@@ -34,7 +34,7 @@ class Registros extends CI_Controller {
 
   public function regSms() {
     $data['regs'] = $this->registroModel->getSms();
-    $data['title'] = 'Sms emviados';
+    $data['title'] = 'Sms enviados';
 
     $this->load->view('templates/header', $data);
     $this->load->view('templates/menu');

@@ -1,6 +1,6 @@
 <?php
 
-class webServiceComModel extends CI_Model {
+class wsComunicationModel extends CI_Model {
 
   public function __construct() {
     $this->load->helper('date');
@@ -42,14 +42,8 @@ class webServiceComModel extends CI_Model {
   }
 
   //peticion de token al WS
-  public function getToken($data){
+  public function getToken(){
     $tran = $this->getTransac();
-    //datos para request
-    $data['transaction'] = $tran;
-    $data['tipo'] = 'ObtencionToken';
-    $data['text'] = NULL;
-    $data['token'] = NULL;
-
     //xml peticion token
     $req = '<?xml version="1.0" encoding="UTF-8"?>
     <request>
@@ -63,10 +57,21 @@ class webServiceComModel extends CI_Model {
 
     $xml = simplexml_load_string($responseToken) or die("Error: Cannot create object");
 
+    $data['transaction'] = $tran;
+    $data['user'] = $this->input->post('user');
+    $data['msisdn'] = $this->input->post('tel');
+    $data['shortcode'] = substr($this->input->post('tel'),0,3);
+    $data['amount'] = $this->input->post('cantidad');
+    $data['tipo'] = 'ObtencionToken';
+    $data['text'] = NULL;
     $data['txId'] = $xml->txId;
     $data['statusCode'] = $xml->statusCode;
     $data['statusMessage'] = $xml->statusMessage;
     $data['token'] = $xml->token;
+
+    $this->setWsComunication($data);
+
+    $data = $this->switchResponse($data);
 
     return $data;
   }
@@ -97,20 +102,23 @@ class webServiceComModel extends CI_Model {
     $data['statusCode'] = $xml->statusCode;
     $data['statusMessage'] = $xml->statusMessage;
 
+    $this->setWsComunication($data);
+
+    $data = $this->switchResponse($data);
+
     return $data;
   }
 
   //envio de sms
   public function sendSms($data){
+
+    $data['text'] = $this->switchMensaje($data);
+
     $tran = $this->getTransac();
-
-    $data['tipo'] = 'EnvioSms';
-    $data['transaction'] = $tran;
-
     //xml envio sms
     $req = '<?xml version="1.0" encoding="UTF-8"?>
     <request>
-      <shortcode>000</shortcode>
+      <shortcode>'.$data['shortcode'].'</shortcode>
       <text>'.$data['text'].'</text>
       <msisdn>'.$data['msisdn'].'</msisdn>
       <transaction>'.$tran.'</transaction>
@@ -122,11 +130,51 @@ class webServiceComModel extends CI_Model {
 
     $xml = simplexml_load_string($responseSms) or die("Error: Cannot create object");
 
+    $data['transaction'] = $tran;
+    $data['amount'] = $this->input->post('cantidad');
+    $data['tipo'] = 'EnvioSms';
+
     $data['txId'] = $xml->txId;
     $data['statusCode'] = $xml->statusCode;
     $data['statusMessage'] = $xml->statusMessage;
+    $data['token'] = $xml->token;
+
+    $this->setWsComunication($data);
+
+    $data = $this->switchResponse($data);
+
+    $this->registroModel->registrarSms($data);
 
     return $data;
+  }
+
+  public function switchMensaje($data){
+    switch ($data['codigo']) {
+      case 'altaOk':
+        return 'Se ha dado de alta. Se le ha cobrado '.$data['amount'].'$ por la suscripción.';
+        break;
+
+      case 'noAlta':
+        return 'No tiene fondos suficientes para la suscripción.';
+        break;
+
+      case 'cobroOk':
+        return 'Se le ha cobrado '.$data['amount'].'$ por la suscripción.';
+        break;
+
+      case 'noCobro':
+        return 'No tiene fondos suficientes para la suscripción. Se le dará de baja.';
+        break;
+
+      case 'bajaOk':
+        return 'Su suscripción se ha dado de baja.';
+        break;
+
+      default:
+        return 'Error. No se ha podido generar el mensaje';
+        break;
+    }
+
   }
 
   //conexion Request ws
@@ -151,6 +199,77 @@ class webServiceComModel extends CI_Model {
   }
 
   //switchCase para statusCode de Response del WS
+  // public function switchResponse ($data) {
+  //
+  //   $statusCode = $data['statusCode'];
+  //   $statusMessage = $data['statusMessage'];
+  //
+  //   switch ($statusCode) {
+  //     case "SUCCESS":
+  //       if ($data['tipo'] == 'PeticionCobro'){
+  //         return $data;
+  //       } elseif ($data['tipo'] == 'EnvioSms'){
+  //         return $data;
+  //       }
+  //       break;
+  //     case "BAD_REQUEST_TYPE":
+  //       echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
+  //       break;
+  //     case "NO_REQUEST":
+  //       echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
+  //       break;
+  //     case "SYSTEM_ERROR":
+  //       if ($data['tipo'] == 'ObtencionToken'){
+  //         $data = $this->getToken();
+  //       } elseif ($data['tipo'] == 'PeticionCobro'){
+  //         $data = $this->peticionCobro($data);
+  //       } elseif ($data['tipo'] == 'EnvioSms'){
+  //         $data = $this->sendSms($data);
+  //       }
+  //       return $data;
+  //       break;
+  //     case "INVALID_XML":
+  //       echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
+  //       break;
+  //     case "MISSING_PROPERTY":
+  //       echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
+  //       break;
+  //     case "MISSING_CREDENTIALS":
+  //       echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
+  //       break;
+  //     case "INVALID_CREDENTIALS":
+  //       echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
+  //       break;
+  //     case "TOKEN_SUCCESS":
+  //       return $data;
+  //       break;
+  //     case "TOKEN_ALREADY_USED":
+  //       //pedir nuevo token
+  //       return $this->getToken();
+  //       break;
+  //     case "INVALID_TOKEN":
+  //       //pedir nuevo token
+  //       return $this->getToken();
+  //       break;
+  //     case "NO_FUNDS":
+  //       return $data;
+  //       break;
+  //     case "CHARGING_ERROR":
+  //       $data = $this->getToken();
+  //       $data = $this->peticionCobro($data);
+  //       return $data;
+  //       break;
+  //     case "DUPLICATED_TR":
+  //       //nueva transaccion
+  //       $data = $this->getToken();
+  //       return $data;
+  //       break;
+  //     default:
+  //       echo '<script language="javascript">alert("switchResponse Error.");</script>';
+  //   }
+  // }
+
+  //switchCase para statusCode de Response del WS mostrando alers.
   public function switchResponse ($data) {
 
     $statusCode = $data['statusCode'];
@@ -160,83 +279,72 @@ class webServiceComModel extends CI_Model {
       case "SUCCESS":
         echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
         if ($data['tipo'] == 'PeticionCobro'){
-          $data['text'] = 'Se ha realizado un cobro de ' . $data['amount']. '$ por la suscripció.';
-          $this->envioSms($data);
+          return $data;
         } elseif ($data['tipo'] == 'EnvioSms'){
-          $this->registroModel->registrarSms($data);
-          $this->wsComunication();
+          return $data;
         }
         break;
       case "BAD_REQUEST_TYPE":
         echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
-        $this->wsComunication();
         break;
       case "NO_REQUEST":
         echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
-        $this->wsComunication();
         break;
       case "SYSTEM_ERROR":
         echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
-        if ($data['tipo'] == 'PeticionCobro'){
-          $this->peticionCobro($data);
+        if ($data['tipo'] == 'ObtencionToken'){
+          $data = $this->getToken();
+        } elseif ($data['tipo'] == 'PeticionCobro'){
+          $data = $this->peticionCobro($data);
         } elseif ($data['tipo'] == 'EnvioSms'){
-          $this->envioSms($data);
-        } elseif ($data['tipo'] == 'ObtencionToken'){
-          $this->getToken($data);
+          $data = $this->envioSms($data);
         }
+        return $data;
         break;
       case "INVALID_XML":
         echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
-        $this->wsComunication();
         break;
       case "MISSING_PROPERTY":
         echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
-        $this->wsComunication();
         break;
       case "MISSING_CREDENTIALS":
         echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
-        $this->wsComunication();
         break;
       case "INVALID_CREDENTIALS":
         echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
-        $this->wsComunication();
         break;
       case "TOKEN_SUCCESS":
         echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
-        //usar token para peticion cobro
-        $this->peticionCobro($data);
+        return $data;
         break;
       case "TOKEN_ALREADY_USED":
         echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
         //pedir nuevo token
-        $this->getToken();
+        return $this->getToken();
         break;
       case "INVALID_TOKEN":
         echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
         //pedir nuevo token
-        $this->getToken();
+        return $this->getToken();
         break;
       case "NO_FUNDS":
         echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
-        $data['text'] = 'No tiene fondos para la suscripción.';
-        $this->envioSms($data);
-        // $this->input->post('telefono') = $data['telefono'];
-        // $this->input->post('estado') = 'baja';
-        $this->usersModel->baja();
-        $this->registroModel->registrarBaja();
+        return $data;
         break;
       case "CHARGING_ERROR":
         echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
-        $this->getToken($data);
+        $data = $this->getToken();
+        $data = $this->peticionCobro($data);
+        return $data;
         break;
       case "DUPLICATED_TR":
         //nueva transaccion
         echo '<script language="javascript">alert("switchResponse: '.$statusCode.': '.$statusMessage.'.");</script>';
-        $this->getToken();
+        $data = $this->getToken();
+        return $data;
         break;
       default:
         echo '<script language="javascript">alert("switchResponse Error.");</script>';
-        $this->wsComunication();
     }
   }
 }

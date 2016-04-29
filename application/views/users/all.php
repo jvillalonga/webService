@@ -19,7 +19,7 @@
           <td><?php echo $user_item['estado']; ?></td>
           <td><?php echo $user_item['ultimoCobro']; ?></td>
           <td class="tdOptions">
-            <form action="alta" method="post">
+            <form action="peticionAlta" method="post">
               <input type="hidden" name="user" value="<?php echo $user_item['user']; ?>"/>
               <input type="hidden" name="tel" value="<?php echo $user_item['telefono']; ?>"/>
               <input type="hidden" name="cantidad" value="5"/>
@@ -30,7 +30,7 @@
               <input type="hidden" name="tel" value="<?php echo $user_item['telefono']; ?>"/>
               <input type = "submit" name = "submit" value = "Dar baja" <?php if ($user_item['estado'] == 'Baja'){ echo "disabled"; }; ?>/>
             </form>
-            <form action="getToken" method="post">
+            <form action="peticionCobro" method="post">
               <input type="hidden" name="user" value="<?php echo $user_item['user']; ?>"/>
               <input type="hidden" name="tel" value="<?php echo $user_item['telefono']; ?>"/>
               <input type="number" step="0.01" min="0" name="cantidad" value="5"

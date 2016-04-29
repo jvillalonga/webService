@@ -8,28 +8,13 @@ class usersModel extends CI_Model {
 
   }
 
-  //cobrar a un usuario
-  public function cobrar(){
-    $cobro = $this->input->post('cantidad');
-    $user = $this->input->post('user');
+  //modifica la fecha de ultimoCobro realizado al usuario
+  public function cobrado(){
     $tel = $this->input->post('tel');
-    //getToken...
-    // $this->db->where('user', $user);
-    // $this->db->update('users');
-  }
 
-  //cobrar a todos los usuarios suscritos
-  public function cobrarSuscritos(){
-    $cobro = $this->input->post('cantidad');
-
-    //da de baja a los usuarios con saldo insuficiente
-    // $this->db->set('estado', 'Baja');
-    // $this->db->where('estado', 'Alta');
-    // $this->db->update('users');
-
-    //cobra a los usuarios de alta
-    // $this->db->where('estado', 'Alta');
-    // $this->db->update('users');
+    $this->db->set('ultimoCobro', standard_date('DATE_W3C', now()));
+    $this->db->where('telefono', $tel);
+    $this->db->update('users');
   }
 
   //da de alta al usuario
@@ -41,8 +26,7 @@ class usersModel extends CI_Model {
   }
 
   //da de baja al usuario
-  public function baja(){
-    $telefono = $this->input->post('tel');
+  public function baja($telefono){
     $this->db->set('estado', 'Baja');
     $this->db->where('telefono', $telefono);
     $this->db->update('users');
