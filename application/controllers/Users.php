@@ -48,18 +48,28 @@ class Users extends CI_Controller {
     }
   }
 
+
   public function peticionAlta() {
-    $data = $this->cobrar();
+
+      $data['user'] = $this->input->post('user');
+      $data['msisdn'] = $this->input->post('tel');
+      $data['shortcode'] = substr($this->input->post('tel'),0,3);
+      $data['amount'] = $this->input->post('cantidad');
+
+    $data = $this->cobrar($data);
     $cobroResult = $data['statusCode'];
     if ($cobroResult == 'SUCCESS'){
 
+        echo '<script language="javascript">alert("Alta con éxito");</script>';
       $this->usersModel->alta();
-      $this->registroModel->registrarAlta();
+      $this->registroModel->registrarAlta($data);
 
       $data['codigo'] = 'altaOk';
       $this->wsComunicationModel->sendSms($data);
+        echo '<script language="javascript">alert("Enviado sms de Alta");</script>';
 
     } elseif ($cobroResult == 'NO_FUNDS') {
+      echo '<script language="javascript">alert("Usuario sin fondos. No será dado de alta");</script>';
 
       $data['codigo'] = 'noAlta';
       $this->wsComunicationModel->sendSms($data);
@@ -68,45 +78,93 @@ class Users extends CI_Controller {
     $this->all();
   }
 
+
   public function peticionCobro() {
-    $data = $this->cobrar();
+
+      $data['user'] = $this->input->post('user');
+      $data['msisdn'] = $this->input->post('tel');
+      $data['shortcode'] = substr($this->input->post('tel'),0,3);
+      $data['amount'] = $this->input->post('cantidad');
+
+    $data = $this->cobrar($data);
     $cobroResult = $data['statusCode'];
     if ($cobroResult == 'SUCCESS'){
+      echo '<script language="javascript">alert("Cobro realizado con éxito.");</script>';
 
       $data['codigo'] = 'cobroOk';
       $this->wsComunicationModel->sendSms($data);
 
-      $this->all();
 
     } elseif ($cobroResult == 'NO_FUNDS') {
+      echo '<script language="javascript">alert("Cobro no realizado. Usuario sin fondos. Será dado de baja.");</script>';
 
+      $this->baja($data);
       $data['codigo'] = 'noCobro';
       $this->wsComunicationModel->sendSms($data);
-      $this->baja($data['msisdn']);
     }
+    $this->all();
   }
 
-  public function baja($telefono) {
-    $this->usersModel->baja($telefono);
+  public function peticionBaja(){
+    $data['user'] = $this->input->post('user');
+    $data['msisdn'] = $this->input->post('tel');
+    $data['shortcode'] = substr($this->input->post('tel'),0,3);
+    $this->baja($data);
 
-    $this->registroModel->registrarBaja();
+    $data['codigo'] = 'bajaOk';
+    $this->wsComunicationModel->sendSms($data);
 
     $this->all();
   }
 
-  public function cobrar(){
-    $data = $this->wsComunicationModel->getToken();
+  //
+  public function baja($data) {
+    $this->usersModel->baja($data['msisdn']);
+
+    $this->registroModel->registrarBaja($data);
+
+  }
+
+
+  public function cobrar($data){
+
+    $data = $this->wsComunicationModel->getToken($data);
     $data = $this->wsComunicationModel->peticionCobro($data);
     if ($data['statusCode'] == 'SUCCESS'){
-      $this->registroModel->registrarCobro();
-      $this->usersModel->cobrado();
+      $this->registroModel->registrarCobro($data);
+      $this->usersModel->cobrado($data['msisdn']);
     }
     return $data;
   }
 
+  //
   public function cobrarSuscritos(){
+    $users = $this->usersModel->getSinCobrar();
 
-      echo '<script language="javascript">alert(" '.now().'-'. strtotime('2016-04-29').'='.((now() - strtotime('2016-04-05'))/60/60/24).'");</script>';
-      $this->all();
+    foreach ($users as $user_item):
+
+      $data['user'] = $user_item['user'];
+      $data['msisdn'] = $user_item['telefono'];
+      $data['shortcode'] = substr($user_item['telefono'],0,3);
+      $data['amount'] = $this->input->post('cantidad');
+
+      $data = $this->cobrar($data);
+      $cobroResult = $data['statusCode'];
+      if ($cobroResult == 'SUCCESS'){
+
+        $data['codigo'] = 'cobroOk';
+        $this->wsComunicationModel->sendSms($data);
+
+        $this->all();
+
+      } elseif ($cobroResult == 'NO_FUNDS') {
+        $this->baja($data);
+        $data['codigo'] = 'noCobro';
+        $this->wsComunicationModel->sendSms($data);
+      }
+
+    endforeach;
+
+    $this->all();
   }
 }

@@ -3,6 +3,7 @@
   <table id="taula">
     <thead>
       <tr>
+        <th>Id</th>
         <th>TrId</th>
         <th>Tipo</th>
         <th>txId</th>
@@ -20,6 +21,7 @@
     <tbody>
       <?php foreach ($regRequest as $reg_item): ?>
         <tr>
+          <td><?php echo $reg_item['id']; ?></td>
           <td><?php echo $reg_item['transaction']; ?></td>
           <td><?php echo $reg_item['tipo']; ?></td>
           <td><?php echo $reg_item['txId']; ?></td>

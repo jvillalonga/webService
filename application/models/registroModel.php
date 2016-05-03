@@ -9,10 +9,10 @@ class registroModel extends CI_Model {
   }
 
   //registra altas
-  public function registrarAlta(){
+  public function registrarAlta($data){
 
-    $user = $this->input->post('user');
-    $tel = $this->input->post('tel');
+    $user = $data['user'];
+    $tel = $data['msisdn'];
     $data = array(
       'user' => $user,
       'tipo' => 'Alta',
@@ -23,10 +23,10 @@ class registroModel extends CI_Model {
   }
 
   //registra bajas
-  public function registrarBaja(){
+  public function registrarBaja($data){
 
-    $user = $this->input->post('user');
-    $tel = $this->input->post('tel');
+    $user = $data['user'];
+    $tel = $data['msisdn'];
     $data = array(
       'user' => $user,
       'tipo' => 'Baja',
@@ -43,14 +43,11 @@ class registroModel extends CI_Model {
   }
 
   //registra cobro
-  public function registrarCobro(){
-    $user = $this->input->post('user');
-    $cantidad = $this->input->post('cantidad');
-    $tel = $this->input->post('tel');
+  public function registrarCobro($data){
     $data = array(
-      'user' => $user,
-      'cantidad' => $cantidad,
-      'telefono' => $tel,
+      'user' => $data['user'],
+      'cantidad' => $data['amount'],
+      'telefono' => $data['msisdn'],
       'fecha' => standard_date('DATE_W3C', now())
     );
     return $this->db->insert('regCobros', $data);

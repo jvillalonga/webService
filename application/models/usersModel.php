@@ -9,8 +9,7 @@ class usersModel extends CI_Model {
   }
 
   //modifica la fecha de ultimoCobro realizado al usuario
-  public function cobrado(){
-    $tel = $this->input->post('tel');
+  public function cobrado($tel){
 
     $this->db->set('ultimoCobro', standard_date('DATE_W3C', now()));
     $this->db->where('telefono', $tel);
@@ -71,6 +70,7 @@ class usersModel extends CI_Model {
     $query = $this->db->count_all_results();
     return $query;
   }
+
   //insert de usuario
   public function setUser() {
     $this->load->helper('url');
@@ -83,6 +83,16 @@ class usersModel extends CI_Model {
         'telefono' => $telefono
       );
     return $this->db->insert('users', $data);
+  }
+
+  //obtiene todos los usuario dados de alta con ultimoCobro anterior a 30 dias
+  public function getSinCobrar() {
+    $mes = standard_date('DATE_W3C', now() - 30*60*60*24);
+    $this->db->where('estado', 'Alta');
+    $this->db->where('ultimoCobro <', $mes);
+    $query = $this->db->get('users');
+    return $query->result_array();
+
   }
 
 }
