@@ -7,6 +7,7 @@ class Users extends CI_Controller {
 
     $this->load->model('usersModel');
     $this->load->model('registroModel');
+    $this->load->model('wsComunicationModel');
     $this->load->helper('url_helper');
     $this->load->helper('date');
     $this->load->helper('form');
@@ -47,38 +48,122 @@ class Users extends CI_Controller {
     }
   }
 
-  public function alta() {
-  //comprovar si se pot cobro,
-    //Si:
-      $this->usersModel->alta();
 
-      $this->registroModel->registrarAlta();
-    //No: missatge 'Sin fondos'.
-      $this->all();
+  public function peticionAlta() {
+
+      $data['user'] = $this->input->post('user');
+      $data['msisdn'] = $this->input->post('tel');
+      $data['shortcode'] = substr($this->input->post('tel'),0,3);
+      $data['amount'] = $this->input->post('cantidad');
+
+    $data = $this->cobrar($data);
+    $cobroResult = $data['statusCode'];
+    if ($cobroResult == 'SUCCESS'){
+
+        echo '<script language="javascript">alert("Alta con éxito");</script>';
+      $this->usersModel->alta();
+      $this->registroModel->registrarAlta($data);
+
+      $data['codigo'] = 'altaOk';
+      $this->wsComunicationModel->sendSms($data);
+        echo '<script language="javascript">alert("Enviado sms de Alta");</script>';
+
+    } elseif ($cobroResult == 'NO_FUNDS') {
+      echo '<script language="javascript">alert("Usuario sin fondos. No será dado de alta");</script>';
+
+      $data['codigo'] = 'noAlta';
+      $this->wsComunicationModel->sendSms($data);
+
+    }
+    $this->all();
   }
 
-  public function baja() {
-    $this->usersModel->baja();
 
-    $this->registroModel->registrarBaja();
+  public function peticionCobro() {
+
+      $data['user'] = $this->input->post('user');
+      $data['msisdn'] = $this->input->post('tel');
+      $data['shortcode'] = substr($this->input->post('tel'),0,3);
+      $data['amount'] = $this->input->post('cantidad');
+
+    $data = $this->cobrar($data);
+    $cobroResult = $data['statusCode'];
+    if ($cobroResult == 'SUCCESS'){
+      echo '<script language="javascript">alert("Cobro realizado con éxito.");</script>';
+
+      $data['codigo'] = 'cobroOk';
+      $this->wsComunicationModel->sendSms($data);
+
+
+    } elseif ($cobroResult == 'NO_FUNDS') {
+      echo '<script language="javascript">alert("Cobro no realizado. Usuario sin fondos. Será dado de baja.");</script>';
+
+      $this->baja($data);
+      $data['codigo'] = 'noCobro';
+      $this->wsComunicationModel->sendSms($data);
+    }
+    $this->all();
+  }
+
+  public function peticionBaja(){
+    $data['user'] = $this->input->post('user');
+    $data['msisdn'] = $this->input->post('tel');
+    $data['shortcode'] = substr($this->input->post('tel'),0,3);
+    $this->baja($data);
+
+    $data['codigo'] = 'bajaOk';
+    $this->wsComunicationModel->sendSms($data);
 
     $this->all();
   }
 
-  public function cobrar(){
-  //comprovar si se pot cobro,
-    //Si:
-      $this->usersModel->cobrar();
+  //
+  public function baja($data) {
+    $this->usersModel->baja($data['msisdn']);
 
-      $this->registroModel->registrarCobro();
-    //No: missatge 'Sin fondos' + Baja.
-      $this->all();
+    $this->registroModel->registrarBaja($data);
+
   }
 
-  public function cobrarSuscritos(){
-    $this->usersModel->cobrarSuscritos();
 
-    //$this->registroModel->registrarCobro();
+  public function cobrar($data){
+
+    $data = $this->wsComunicationModel->getToken($data);
+    $data = $this->wsComunicationModel->peticionCobro($data);
+    if ($data['statusCode'] == 'SUCCESS'){
+      $this->registroModel->registrarCobro($data);
+      $this->usersModel->cobrado($data['msisdn']);
+    }
+    return $data;
+  }
+
+  //
+  public function cobrarSuscritos(){
+    $users = $this->usersModel->getSinCobrar();
+
+    foreach ($users as $user_item):
+
+      $data['user'] = $user_item['user'];
+      $data['msisdn'] = $user_item['telefono'];
+      $data['shortcode'] = substr($user_item['telefono'],0,3);
+      $data['amount'] = $this->input->post('cantidad');
+
+      $data = $this->cobrar($data);
+      $cobroResult = $data['statusCode'];
+      if ($cobroResult == 'SUCCESS'){
+
+        $data['codigo'] = 'cobroOk';
+        $this->wsComunicationModel->sendSms($data);
+
+        $this->all();
+
+      } elseif ($cobroResult == 'NO_FUNDS') {
+        $this->baja($data);
+        $data['codigo'] = 'noCobro';
+        $this->wsComunicationModel->sendSms($data);
+      }
+
+    endforeach;
 
     $this->all();
   }

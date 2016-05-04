@@ -14,7 +14,7 @@
     <tbody>
       <?php foreach ($regs as $reg_item): ?>
         <tr>
-          <td><?php echo $reg_item['idTransaccion']; ?></td>
+          <td><?php echo $reg_item['id']; ?></td>
           <td><?php echo $reg_item['user']; ?></td>
           <td><?php echo $reg_item['telefono']; ?></td>
           <td> <?php echo $reg_item['cantidad']; ?> $</td>

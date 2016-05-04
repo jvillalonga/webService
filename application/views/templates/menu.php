@@ -11,7 +11,7 @@
         <a href="<?php echo site_url('registros/altasBajas'); ?>">Altas/Bajas</a>
       </li>|
       <li>
-        <a href="<?php echo site_url('registros/cobros'); ?>">Cobros</a>
+        <a href="<?php echo site_url('registros/regCobros'); ?>">Cobros</a>
       </li>|
       <li>
         <a href="<?php echo site_url('registros/regSms'); ?>">Sms</a>

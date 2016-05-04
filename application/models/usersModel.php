@@ -8,28 +8,12 @@ class usersModel extends CI_Model {
 
   }
 
-  //cobrar a un usuario
-  public function cobrar(){
-    $cobro = $this->input->post('cantidad');
-    $user = $this->input->post('user');
-    $tel = $this->input->post('tel');
-    //getToken...
-    // $this->db->where('user', $user);
-    // $this->db->update('users');
-  }
+  //modifica la fecha de ultimoCobro realizado al usuario
+  public function cobrado($tel){
 
-  //cobrar a todos los usuarios suscritos
-  public function cobrarSuscritos(){
-    $cobro = $this->input->post('cantidad');
-
-    //da de baja a los usuarios con saldo insuficiente
-    // $this->db->set('estado', 'Baja');
-    // $this->db->where('estado', 'Alta');
-    // $this->db->update('users');
-
-    //cobra a los usuarios de alta
-    // $this->db->where('estado', 'Alta');
-    // $this->db->update('users');
+    $this->db->set('ultimoCobro', standard_date('DATE_W3C', now()));
+    $this->db->where('telefono', $tel);
+    $this->db->update('users');
   }
 
   //da de alta al usuario
@@ -41,8 +25,7 @@ class usersModel extends CI_Model {
   }
 
   //da de baja al usuario
-  public function baja(){
-    $telefono = $this->input->post('tel');
+  public function baja($telefono){
     $this->db->set('estado', 'Baja');
     $this->db->where('telefono', $telefono);
     $this->db->update('users');
@@ -87,6 +70,7 @@ class usersModel extends CI_Model {
     $query = $this->db->count_all_results();
     return $query;
   }
+
   //insert de usuario
   public function setUser() {
     $this->load->helper('url');
@@ -99,6 +83,16 @@ class usersModel extends CI_Model {
         'telefono' => $telefono
       );
     return $this->db->insert('users', $data);
+  }
+
+  //obtiene todos los usuario dados de alta con ultimoCobro anterior a 30 dias
+  public function getSinCobrar() {
+    $mes = standard_date('DATE_W3C', now() - 30*60*60*24);
+    $this->db->where('estado', 'Alta');
+    $this->db->where('ultimoCobro <', $mes);
+    $query = $this->db->get('users');
+    return $query->result_array();
+
   }
 
 }
