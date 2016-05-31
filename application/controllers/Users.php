@@ -16,8 +16,7 @@ class Users extends CI_Controller {
   }
 
 
-  public function all()
-  {
+  public function all() {
     $data['users'] = $this->usersModel->getAllUsers();
     $data['title'] = 'Todos los usuarios';
 
@@ -66,7 +65,6 @@ class Users extends CI_Controller {
 
       $data['codigo'] = 'altaOk';
       $this->wsComunicationModel->sendSms($data);
-        echo '<script language="javascript">alert("Enviado sms de Alta");</script>';
 
     } elseif ($cobroResult == 'NO_FUNDS') {
       echo '<script language="javascript">alert("Usuario sin fondos. No será dado de alta");</script>';
@@ -114,6 +112,7 @@ class Users extends CI_Controller {
     $data['codigo'] = 'bajaOk';
     $this->wsComunicationModel->sendSms($data);
 
+    echo '<script language="javascript">alert("Baja realizada con éxito.");</script>';
     $this->all();
   }
 
